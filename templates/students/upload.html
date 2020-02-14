@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+{% block content %}
+<form action="." method="POST" enctype="multipart/form-data">
+{% if form.errors %}
+    {% for key, value in form.errors.items %}
+        <strong>key</strong> : value
+    {% endfor %}
+{% endif %}
+{% csrf_token %}
+{{ form.as_p }}
+<table>
+
+</table>
+<button type="submit">SUBMIT</button>
+</form>
+{% endblock %}

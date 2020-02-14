@@ -40,14 +40,16 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     # Third-party
-    'allauth',
+    # 'allauth',
     'allauth.account',
     'crispy_forms',
     'debug_toolbar',
+    'django_excel',
 
     # Local
     'users',
     'pages',
+    'students'
 ]
 
 MIDDLEWARE = [
@@ -134,7 +136,14 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
 
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
+                        "django_excel.TemporaryExcelFileUploadHandler")
 
 # Enabled for django-debug-toolbar to work
 # https://docs.djangoproject.com/en/2.2/ref/settings/#internal-ips

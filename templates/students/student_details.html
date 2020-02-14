@@ -1,0 +1,22 @@
+{% extends '_base.html' %}
+{% block content %}
+<div class="card">
+    <img src="/media/djangox_project/default.png" alt="Student Passport">
+    <dl>
+        <dt>Surname</dt>
+        <dd>{{ student.surname }}</dd>
+        <dt>First Name</dt>
+        <dd>{{ student.firstname }}</dd>
+        <dt>Other Name</dt>
+        <dd>{{ student.othername }}</dd>
+        <dt>Matriculation Number</dt>
+        <dd>{{ student.matric_num }}</dd>
+        <dt>Gender</dt>
+        <dd>{{ student.gender }}</dd>
+        <dt>First Name</dt>
+        <dd>{{ student.gender }}</dd>
+        <dt>Programme</dt>
+        <dd>{{ student.programme }}</dd>
+    </dl>
+</div>
+{% endblock %}

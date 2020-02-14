@@ -1,8 +1,9 @@
 from django.urls import path
-
-from .views import HomePageView, AboutPageView
+from students.views import FileFieldView, StudentDetailView
+from .views import HomePageView, upload_student_records
 
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),
-    path('about/', AboutPageView.as_view(), name='about'),
+    path('dataupload/', FileFieldView.as_view(), name='dataupload'),
+    path('student/', StudentDetailView.as_view(), name='student_details')
 ]
