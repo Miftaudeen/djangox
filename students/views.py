@@ -33,4 +33,7 @@ class StudentDetailView(DetailView):
 
     def get_object(self, queryset=None):
         query = self.request.GET.get("matric")
-        return Student.objects.filter(matric_num=query)[0]
+        try:
+            return Student.objects.filter(matric_num=query)[0]
+        except Exception as e:
+            return None
