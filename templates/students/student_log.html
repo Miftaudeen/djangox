@@ -1,0 +1,37 @@
+{% extends '_base.html' %}
+{% block content %}
+    <table class="tabular" border="1" cellpadding="10px">
+        <thead>
+        <tr>
+            <td>S/N</td>
+            <td>Day</td>
+            <td>Full Name</td>
+        <td>Student's Matric Number</td>
+        <td>Time</td>
+        </thead>
+        <tbody>
+        {% for student_log in object_list %}
+            <tr>
+            <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+            <td>{{ student_log.day }}</td>
+                <td>{{ student_log.student.surname }} {{ student_log.student.firstname }} {{ student_log.student.othername }}</td>
+            <td>{{ student_log.student.matric_num}}</td>
+            <td>{{ student_log.time}}</td>
+            </tr>
+        {% endfor %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="current"> Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                {% endif %}
+            </span>
+        </div>
+        </tbody>
+        <tr></tr>
+    </table>
+{% endblock %}

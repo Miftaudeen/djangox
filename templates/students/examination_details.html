@@ -1,0 +1,76 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <div style="margin-bottom: 100px">
+    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+        <dt>Course Title</dt>
+        <dd>{{ examination.title }}</dd>
+        <dt>Venue</dt>
+        <dd>{{ examination.venue}}</dd>
+        <dt>Examination Date</dt>
+        <dd>{{ examination.date }}</dd>
+        <dt>Start Time</dt>
+        <dd>{{ examination.start_time }}</dd>
+        <dt>Completion Time</dt>
+        <dd>{{ examination.end_time}}</dd>
+    </dl>
+    {% if valid %}
+    <form action="{% url 'attendance_details'%}" method="get">
+        <input name="exam" type="number" value="{{ examination.id }}" hidden>
+        <input name="matric" type="text" placeholder="Take attendance...">
+    <input type="submit" value="Take Attendance">
+    </form>
+    {% endif %}
+    <table border="1" style="margin-top: 50px">
+                <thead>
+                    <tr>
+                        <td>S/N</td>
+                        <td>Full Name</td>
+                        <td>Matriculation Number</td>
+                        <td>Check-in Time</td>
+                        <td>Check-out Time</td>
+
+                    </tr>
+                </thead>
+    <tbody>
+    {% for stud_att in attendance %}
+
+
+                <tr>
+            <td>{{ forloop.counter }}</td>
+                <td>{{ stud_att.student.surname }} {{ stud_att.student.firstname }} {{ stud_att.student.othername }}</td>
+            <td>{{ stud_att.student.matric_num}}</td>
+            <td>{{ stud_att.check_in }}</td>
+                {% if stud_att.check_out %}
+                    <td>{{ stud_att.check_out }}</td>
+                    {% else %}
+                    <td>
+                    <form action="{% url 'attendance_details'%}" method="get" style="display: inline">
+                        <input name="exam" type="number" value="{{ examination.id }}" hidden  style="display: inline">
+                        <input name="matric" type="text" value="{{ stud_att.student.matric_num }}" hidden  style="display: inline">
+                        <input name="checkout" type="text" value="true" hidden  style="display: inline">
+                        <input type="submit" value="Check Out" style="display: inline">
+                    </form>
+                    </td>
+                {% endif %}
+
+            <td>{{ stud_att.time}}</td>
+            </tr>
+
+
+        {% endfor %}
+    </tbody>
+</table>
+    </div>
+    <script>
+    window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted ||
+                         ( typeof window.performance != "undefined" &&
+                              window.performance.navigation.type === 2 );
+  if ( historyTraversal ) {
+    // Handle page restore.
+    window.location.reload();
+  }
+});
+</script>
+{% endblock %}

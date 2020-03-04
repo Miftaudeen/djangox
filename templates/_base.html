@@ -20,12 +20,17 @@
 
 <body>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-      <a class="navbar-brand" href="{% url 'home' %}">DjangoX</a>
+      <a class="navbar-brand" href="{% url 'home' %}">YABATECH Access Control</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <a class="navbar-link" href="{% url 'dataupload' %}">Data Upload</a>
+
+        <a class="navbar-link" href="{% url 'student_list' %}">Students List</a>
+
+        <a class="navbar-link" href="{% url 'student_log' %}">Access Records</a>
+        <a class="navbar-link" href="{% url 'examination_list' %}">Examination</a>
         {% if user.is_authenticated %}
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
@@ -55,7 +60,7 @@
   </div>
 
    <nav class="navbar fixed-bottom navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">&copy; DjangoX 2020</a>
+    <a class="navbar-brand" href="#">&copy; Django x 2020</a>
   </nav>
 
   {% block javascript %}

@@ -23,6 +23,9 @@
         <dd>{{ student.gender }}</dd>
         <dt>Programme</dt>
         <dd>{{ student.programme }}</dd>
+        <dt>Payment Status</dt>
+        <dd>{{ student.payment_status | title }} Payment</dd>
+
     </dl>
     {% else %}
         <p>There are no Student with the provided matriculation number</p>

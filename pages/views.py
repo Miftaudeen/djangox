@@ -1,6 +1,8 @@
 from django.views.generic import TemplateView
 from students.forms import UploadStudentsForm
 from django.shortcuts import render
+
+
 class HomePageView(TemplateView):
     template_name = 'pages/home.html'
 
