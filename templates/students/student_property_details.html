@@ -1,0 +1,55 @@
+{% extends '_base.html' %}
+{% block content %}
+    <script>
+    window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted ||
+                         ( typeof window.performance != "undefined" &&
+                              window.performance.navigation.type === 2 );
+  if ( historyTraversal ) {
+    // Handle page restore.
+    window.location.reload();
+  }
+});
+</script>
+<div class="card" style="padding: 100px">
+    {% if property.student %}
+        {% with image_url=property.student.matric_num %}
+            <div style="background-image: url('../media/{{  image_url|cut:'/' }}.PNG'); background-size: contain; background-repeat: no-repeat; width:40%; height: 300px; display: inline-block">
+                <img src="../media/{{  image_url|cut:'/' }}.jpg" height="300" alt="Student Passport">
+            </div>
+        {% endwith %}
+    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+        <dt>Surname</dt>
+        <dd>{{ property.student.surname }}</dd>
+        <dt>First Name</dt>
+        <dd>{{ property.student.firstname }}</dd>
+        <dt>Other Name</dt>
+        <dd>{{ property.student.othername }}</dd>
+        <dt>Matriculation Number</dt>
+        <dd>{{ property.student.matric_num }}</dd>
+        <dt>Gender</dt>
+        <dd>{{ property.student.gender }}</dd>
+        <dt>Room</dt>
+        <dd>{{ property.student.room }}</dd>
+        <dt>Programme</dt>
+        <dd>{{ property.student.programme }}</dd>
+        <dt>Payment Status</dt>
+        <dd>{{ property.student.payment_status | title }} Payment</dd>
+        <dt>Name of property</dt>
+        <dd>{{ property.name }}</dd>
+        <dt>Mover of property</dt>
+        <dd>{{  property.mover}}</dd>
+        <dt>Description</dt>
+        <dd>{{ property.description}}</dd>
+        <dt>Moving</dt>
+        <dd>{{ property.moving | title }}</dd>
+        <dt>Time and Date</dt>
+        <dd>{{ property.timestamp }}</dd>
+
+    </dl>
+    {% else%}
+        <p>There are no Student with the provided matriculation number</p>
+    {% endif %}
+</div>
+
+{% endblock %}

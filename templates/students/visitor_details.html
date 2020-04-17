@@ -1,0 +1,57 @@
+{% extends '_base.html' %}
+{% block content %}
+    <script>
+    window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted ||
+                         ( typeof window.performance != "undefined" &&
+                              window.performance.navigation.type === 2 );
+  if ( historyTraversal ) {
+    // Handle page restore.
+    window.location.reload();
+  }
+});
+</script>
+<div class="card" style="padding: 100px">
+    {% if visitor.student %}
+        {% with image_url=visitor.student.matric_num %}
+
+            <div style="background-image: url('../media/{{  image_url|cut:'/' }}.PNG'); background-size: contain; background-repeat: no-repeat; width:40%; height: 300px; display: inline-block">
+                <img src="../media/{{  image_url|cut:'/' }}.jpg" height="300" alt="Student Passport">
+            </div>
+        {% endwith %}
+    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+        <dt>Surname</dt>
+        <dd>{{ visitor.student.surname }}</dd>
+        <dt>First Name</dt>
+        <dd>{{ visitor.student.firstname }}</dd>
+        <dt>Other Name</dt>
+        <dd>{{ visitor.student.othername }}</dd>
+        <dt>Matriculation Number</dt>
+        <dd>{{ visitor.student.matric_num }}</dd>
+        <dt>Gender</dt>
+        <dd>{{ visitor.student.gender }}</dd>
+        <dt>Room</dt>
+        <dd>{{ visitor.student.room }}</dd>
+        <dt>Programme</dt>
+        <dd>{{ visitor.student.programme }}</dd>
+        <dt>Payment Status</dt>
+        <dd>{{ visitor.student.payment_status | title }} Payment</dd>
+        <dt>Visitor Name</dt>
+        <dd>{{ visitor.name }}</dd>
+        <dt>Visitor's Phone Number</dt>
+        <dd>{{ visitor.phone_number }}</dd>
+        <dt>Visitor's Address</dt>
+        <dd>{{ visitor.address }}</dd>
+        <dt>Visitor Arrival Time</dt>
+        <dd>{{ visitor.arrival_time }}</dd>
+        {% if visitor.departure_time %}
+            <dt>Visitor Departure Time</dt>
+            <dd>{{ visitor.departure_time }}</dd>
+        {% endif %}
+    </dl>
+    {% else%}
+        <p>There are no Student with the provided matriculation number</p>
+    {% endif %}
+</div>
+
+{% endblock %}

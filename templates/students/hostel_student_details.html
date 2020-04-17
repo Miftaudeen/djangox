@@ -1,0 +1,191 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <div style="margin-bottom: 100px">
+    {% with image_url=student.matric_num %}
+
+            <div style="background-image: url('../../../media/{{  image_url|cut:'/' }}.PNG'); background-size: contain; background-repeat: no-repeat; width:40%; height: 300px; display: inline-block">
+                <img src="../../../media/{{  image_url|cut:'/' }}.jpg" height="300" alt="Student Passport">
+            </div>
+        {% endwith %}
+    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+        <dt>Full Name</dt>
+        <dd>{{ student.surname }}, {{ student.firstname }} {{ student.othername }}</dd>
+        <dt>Room</dt>
+        <dd>{{ student.room}}</dd>
+        <dt>Matriculation Number</dt>
+        <dd>{{ student.matric_num }}</dd>
+        <dt>Programme</dt>
+        <dd>{{ student.programme }}</dd>
+        <dt>Payment Status</dt>
+        <dd>{{ student.payment_status}}</dd>
+    </dl>
+
+    <div class="colM">
+    <br>
+        <h6>External Visitor</h6>
+    <form action="{% url 'visitor_details'%}" method="get">
+        <input name="student" type="number" value="{{ student.id }}" hidden>
+        <input name="name" type="text" placeholder="Visitor Name...">
+        <input name="phone_number" type="text" placeholder="Visitor's Phone Number...">
+        <input name="address" type="text" placeholder="Visitor's Address...">
+    <input type="submit" value="Allow">
+    </form>
+
+    <table border="1" style="margin-top: 50px">
+                <thead>
+                    <tr>
+                        <td>S/N</td>
+                        <td>Visiting</td>
+                        <td>Visitor Name</td>
+                        <td>Phone Number</td>
+                        <td>Address</td>
+                        <td>Arrival Time</td>
+                        <td>Departure Time</td>
+
+                    </tr>
+                </thead>
+    <tbody>
+    {% for visitor in visitors %}
+
+
+                <tr>
+            <td>{{ forloop.counter }}</td>
+                <td>{{ visitor.student}}</td>
+                <td>{{ visitor.name}}</td>
+            <td>{{ visitor.phone_number }}</td>
+            <td>{{ visitor.address }}</td>
+            <td>{{ visitor.arrival_time }}</td>
+                {% if visitor.departure_time %}
+                    <td>{{ visitor.departure_time }}</td>
+                    {% else %}
+                    <td>
+                    <form action="{% url 'visitor_details'%}" method="get" style="display: inline">
+                        <input name="student" type="number" value="{{ student.id }}" hidden  style="display: inline">
+                        <input name="visitor" type="text" value="{{ visitor.id }}" hidden  style="display: inline">
+                        <input name="checkout" type="text" value="true" hidden  style="display: inline">
+                        <input type="submit" value="Check Out" style="display: inline">
+                    </form>
+                    </td>
+                {% endif %}
+
+            </tr>
+
+
+        {% endfor %}
+    </tbody>
+</table>
+    </div>
+
+    <div class="colM">
+    <br>
+        <h6>Student Visitor</h6>
+    <form action="{% url 'student_visitor_attendance'%}" method="get">
+        <input name="hostel" type="number" value="{{ hostel.id }}" hidden>
+        <input name="host" type="number" value="{{ student.id }}" hidden>
+        <input name="matric" type="text" placeholder="Matriculation number...">
+    <input type="submit" value="Allow">
+    </form>
+        <table border="1" style="margin-top: 50px">
+                <thead>
+                    <tr>
+                        <td>S/N</td>
+                        <td>Visiting</td>
+                        <td>Visitor Name</td>
+                        <td>Programme</td>
+                        <td>Matric Number</td>
+                        <td>Arrival Time</td>
+                        <td>Departure Time</td>
+
+                    </tr>
+                </thead>
+    <tbody>
+    {% for visitor in student_visitors %}
+
+
+                <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ visitor.student}}</td>
+                <td>{{ visitor.visitor.firstname}} {{ visitor.visitor.surname}} {{ visitor.visitor.othername}}</td>
+            <td>{{ visitor.visitor.programme }}</td>
+            <td>{{ visitor.visitor.matric_num }}</td>
+            <td>{{ visitor.arrival_time }}</td>
+                {% if visitor.departure_time %}
+                    <td>{{ visitor.departure_time }}</td>
+                    {% else %}
+                    <td>
+                    <form action="{% url 'student_visitor_attendance'%}" method="get" style="display: inline">
+                        <input name="host" type="number" value="{{ student.id }}" hidden  style="display: inline">
+                        <input name="visitor" type="text" value="{{ visitor.id }}" hidden  style="display: inline">
+                        <input name="checkout" type="text" value="true" hidden  style="display: inline">
+                        <input type="submit" value="Check Out" style="display: inline">
+                    </form>
+                    </td>
+                {% endif %}
+
+            </tr>
+
+
+        {% endfor %}
+    </tbody>
+</table>
+    </div>
+<div class="colM">
+    <br>
+        <h6>Student Properties</h6>
+    <form action="{% url 'student_property_details'%}" method="get">
+        <input name="student" type="number" value="{{ student.id }}" hidden>
+        <input name="name" type="text" placeholder="Property Name...">
+        <input name="mover" type="text" placeholder="Mover of property...">
+        <input name="description" type="text" placeholder="Description...">
+        <label>Moving</label>
+        <select name="moving">
+            <option value="in">In</option>
+            <option value="out">Out</option>
+        </select>
+    <input type="submit" value="Permit">
+    </form>
+        <table border="1" style="margin-top: 50px">
+                <thead>
+                    <tr>
+                        <td>S/N</td>
+                        <td>Property Name</td>
+                        <td>Mover of property</td>
+                        <td>Description</td>
+                        <td>Moving</td>
+                        <td>Time</td>
+
+
+                    </tr>
+                </thead>
+    <tbody>
+    {% for property in properties %}
+
+
+                <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ property.name}}</td>
+                <td>{{ property.mover}}</td>
+            <td>{{ property.description }}</td>
+            <td>{{ property.moving | upper }}</td>
+            <td>{{ property.timestamp }}</td>
+            </tr>
+
+
+        {% endfor %}
+    </tbody>
+</table>
+    </div>
+    </div>
+    <script>
+    window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted ||
+                         ( typeof window.performance != "undefined" &&
+                              window.performance.navigation.type === 2 );
+  if ( historyTraversal ) {
+    // Handle page restore.
+    window.location.reload();
+  }
+});
+</script>
+{% endblock %}

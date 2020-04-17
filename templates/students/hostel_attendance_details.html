@@ -1,0 +1,52 @@
+{% extends '_base.html' %}
+{% block content %}
+    <script>
+    window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted ||
+                         ( typeof window.performance != "undefined" &&
+                              window.performance.navigation.type === 2 );
+  if ( historyTraversal ) {
+    // Handle page restore.
+    window.location.reload();
+  }
+});
+</script>
+<div class="card" style="padding: 100px">
+    {% if hostelattendance.student %}
+        {% with image_url=hostelattendance.student.matric_num %}
+            <div style="background-image: url('../media/{{  image_url|cut:'/' }}.PNG'); background-size: contain; background-repeat: no-repeat; width:40%; height: 300px; display: inline-block">
+                <img src="../../media/{{  image_url|cut:'/' }}.jpg" height="300" alt="Student Passport">
+            </div>
+        {% endwith %}
+    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+        <dt>Surname</dt>
+        <dd>{{ hostelattendance.student.surname }}</dd>
+        <dt>First Name</dt>
+        <dd>{{ hostelattendance.student.firstname }}</dd>
+        <dt>Other Name</dt>
+        <dd>{{ hostelattendance.student.othername }}</dd>
+        <dt>Matriculation Number</dt>
+        <dd>{{ hostelattendance.student.matric_num }}</dd>
+        <dt>Gender</dt>
+        <dd>{{ hostelattendance.student.gender }}</dd>
+        <dt>First Name</dt>
+        <dd>{{ hostelattendance.student.gender }}</dd>
+        <dt>Programme</dt>
+        <dd>{{ hostelattendance.student.programme }}</dd>
+        <dt>Room</dt>
+        <dd>{{ hostelattendance.student.room }}</dd>
+        <dt>Payment Status</dt>
+        <dd>{{ hostelattendance.student.payment_status | title }} Payment</dd>
+        <dt>Check-in Time</dt>
+        <dd>{{ hostelattendance.check_in }}</dd>
+        {% if hostelattendance.check_out %}
+            <dt>Check-out Time</dt>
+            <dd>{{ hostelattendance.check_out }}</dd>
+        {% endif %}
+    </dl>
+    {% else%}
+        <p>There are no Student with the provided matriculation number</p>
+    {% endif %}
+</div>
+
+{% endblock %}
