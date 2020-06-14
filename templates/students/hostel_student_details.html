@@ -8,40 +8,57 @@
                 <img src="../../../media/{{  image_url|cut:'/' }}.jpg" height="300" alt="Student Passport">
             </div>
         {% endwith %}
-    <dl style="padding-top: 20px; width:40%;  display: inline-block">
-        <dt>Full Name</dt>
-        <dd>{{ student.surname }}, {{ student.firstname }} {{ student.othername }}</dd>
-        <dt>Room</dt>
-        <dd>{{ student.room}}</dd>
+    <dl style="padding-top: 20px; width:58%;  display: inline-block">
+        <blockquote class="green">
+        <dt>Surname</dt>
+        </blockquote>
+        <dd>{{ student.surname }}</dd>
+        <blockquote class="green">
+        <dt>First Name</dt>
+        </blockquote>
+
+        <dd>{{ student.firstname }}</dd>
+        <blockquote class="green">
+        <dt>Other Name</dt>
+        </blockquote>
+        <dd>{{ student.othername }}</dd>
+        <blockquote class="green">
         <dt>Matriculation Number</dt>
+        </blockquote>
+
         <dd>{{ student.matric_num }}</dd>
-        <dt>Programme</dt>
-        <dd>{{ student.programme }}</dd>
+        <blockquote class="green">
         <dt>Payment Status</dt>
-        <dd>{{ student.payment_status}}</dd>
+        </blockquote>
+
+        <dd>{{ student.payment_status|upper}} PAYMENT</dd>
+
     </dl>
+
 
     <div class="colM">
     <br>
         <h6>External Visitor</h6>
+    {% if user.role == "Porter" %}
     <form action="{% url 'visitor_details'%}" method="get">
         <input name="student" type="number" value="{{ student.id }}" hidden>
         <input name="name" type="text" placeholder="Visitor Name...">
         <input name="phone_number" type="text" placeholder="Visitor's Phone Number...">
         <input name="address" type="text" placeholder="Visitor's Address...">
-    <input type="submit" value="Allow">
+    <input type="submit" value="Allow" class="btn yellow accent-4">
     </form>
+    {% endif %}
 
     <table border="1" style="margin-top: 50px">
                 <thead>
                     <tr>
-                        <td>S/N</td>
-                        <td>Visiting</td>
-                        <td>Visitor Name</td>
-                        <td>Phone Number</td>
-                        <td>Address</td>
-                        <td>Arrival Time</td>
-                        <td>Departure Time</td>
+                        <th>S/N</th>
+                        <th>Visiting</th>
+                        <th>Visitor Name</th>
+                        <th>Phone Number</th>
+                        <th>Address</th>
+                        <th>Arrival Time</th>
+                        <th>Departure Time</th>
 
                     </tr>
                 </thead>
@@ -58,13 +75,13 @@
             <td>{{ visitor.arrival_time }}</td>
                 {% if visitor.departure_time %}
                     <td>{{ visitor.departure_time }}</td>
-                    {% else %}
+                    {% elif user.role == "Porter" %}
                     <td>
                     <form action="{% url 'visitor_details'%}" method="get" style="display: inline">
-                        <input name="student" type="number" value="{{ student.id }}" hidden  style="display: inline">
-                        <input name="visitor" type="text" value="{{ visitor.id }}" hidden  style="display: inline">
-                        <input name="checkout" type="text" value="true" hidden  style="display: inline">
-                        <input type="submit" value="Check Out" style="display: inline">
+                        <input name="student" type="number" value="{{ student.id }}" hidden >
+                        <input name="visitor" type="text" value="{{ visitor.id }}" hidden  >
+                        <input name="checkout" type="text" value="true" hidden  >
+                        <input type="submit" value="Check Out" style="display: inline" class="btn yellow accent-4">
                     </form>
                     </td>
                 {% endif %}
@@ -80,22 +97,24 @@
     <div class="colM">
     <br>
         <h6>Student Visitor</h6>
+    {% if user.role == "Porter" %}
     <form action="{% url 'student_visitor_attendance'%}" method="get">
         <input name="hostel" type="number" value="{{ hostel.id }}" hidden>
         <input name="host" type="number" value="{{ student.id }}" hidden>
         <input name="matric" type="text" placeholder="Matriculation number...">
-    <input type="submit" value="Allow">
+    <input type="submit" value="Allow" class="btn yellow accent-4">
     </form>
-        <table border="1" style="margin-top: 50px">
+    {% endif %}
+        <table class="responsive-table striped" style="margin-top: 50px">
                 <thead>
                     <tr>
-                        <td>S/N</td>
-                        <td>Visiting</td>
-                        <td>Visitor Name</td>
-                        <td>Programme</td>
-                        <td>Matric Number</td>
-                        <td>Arrival Time</td>
-                        <td>Departure Time</td>
+                        <th>S/N</th>
+                        <th>Visiting</th>
+                        <th>Visitor Name</th>
+                        <th>Programme</th>
+                        <th>Matric Number</th>
+                        <th>Arrival Time</th>
+                        <th>Departure Time</th>
 
                     </tr>
                 </thead>
@@ -112,13 +131,13 @@
             <td>{{ visitor.arrival_time }}</td>
                 {% if visitor.departure_time %}
                     <td>{{ visitor.departure_time }}</td>
-                    {% else %}
+                    {% elif user.role == "Porter" %}
                     <td>
                     <form action="{% url 'student_visitor_attendance'%}" method="get" style="display: inline">
-                        <input name="host" type="number" value="{{ student.id }}" hidden  style="display: inline">
-                        <input name="visitor" type="text" value="{{ visitor.id }}" hidden  style="display: inline">
-                        <input name="checkout" type="text" value="true" hidden  style="display: inline">
-                        <input type="submit" value="Check Out" style="display: inline">
+                        <input name="host" type="number" value="{{ student.id }}" hidden  style="display: none">
+                        <input name="visitor" type="text" value="{{ visitor.id }}" hidden  style="display: none">
+                        <input name="checkout" type="text" value="true" hidden  style="display: none">
+                        <input type="submit" value="Check Out" style="display: inline" class="btn yellow accent-4">
                     </form>
                     </td>
                 {% endif %}
@@ -133,27 +152,35 @@
 <div class="colM">
     <br>
         <h6>Student Properties</h6>
+{% if user.role == "Porter" %}
     <form action="{% url 'student_property_details'%}" method="get">
         <input name="student" type="number" value="{{ student.id }}" hidden>
         <input name="name" type="text" placeholder="Property Name...">
         <input name="mover" type="text" placeholder="Mover of property...">
         <input name="description" type="text" placeholder="Description...">
-        <label>Moving</label>
-        <select name="moving">
-            <option value="in">In</option>
-            <option value="out">Out</option>
-        </select>
-    <input type="submit" value="Permit">
+        <p>
+            Moving
+      <label>
+        <input name="moving" value="in" type="radio" checked />
+        <span>In</span>
+      </label>
+      <label>
+        <input name="moving" value="out" type="radio" />
+        <span>Out</span>
+      </label>
+    </p>
+        <input type="submit" value="Permit" class="btn yellow accent-4">
     </form>
-        <table border="1" style="margin-top: 50px">
+{% endif %}
+        <table class="responsive-table striped" style="margin-top: 50px">
                 <thead>
                     <tr>
-                        <td>S/N</td>
-                        <td>Property Name</td>
-                        <td>Mover of property</td>
-                        <td>Description</td>
-                        <td>Moving</td>
-                        <td>Time</td>
+                        <th>S/N</th>
+                        <th>Property Name</th>
+                        <th>Mover of property</th>
+                        <th>Description</th>
+                        <th>Moving</th>
+                        <th>Time</th>
 
 
                     </tr>

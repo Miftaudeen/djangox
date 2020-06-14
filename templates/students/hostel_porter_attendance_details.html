@@ -1,0 +1,42 @@
+{% extends '_base.html' %}
+{% block content %}
+    <script>
+    window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted ||
+                         ( typeof window.performance != "undefined" &&
+                              window.performance.navigation.type === 2 );
+  if ( historyTraversal ) {
+    // Handle page restore.
+    window.location.reload();
+  }
+});
+</script>
+<div class="card" style="padding: 100px">
+    {% if porterattendance.user.role == "Porter" %}
+    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+        <dt>Surname</dt>
+        <dd>{{ porterattendance.user.last_name }}</dd>
+        <dt>First Name</dt>
+        <dd>{{ porterattendance.user.firstname }}</dd>
+        <dt>Staff Id Number</dt>
+        <dd>{{ porterattendance.user.staff_id_number }}</dd>
+        <dt>Phone Number</dt>
+        <dd>{{ porterattendance.user.phone_number }}</dd>
+        <dt>Email</dt>
+        <dd>{{ porterattendance.user.email }}</dd>
+        <dt>Hostel</dt>
+        <dd>{{ porterattendance.hostel }}</dd>
+        <dt>Arrival Time</dt>
+        <dd>{{ porterattendance.arrival_time }}</dd>
+        {% if porterattendance.departure_time %}
+            <dt>Departure Time</dt>
+            <dd>{{ porterattendance.departure_time }}</dd>
+
+        {% endif %}
+    </dl>
+    {% else%}
+        <p>There are no Porter with the provided staff id number</p>
+    {% endif %}
+</div>
+
+{% endblock %}

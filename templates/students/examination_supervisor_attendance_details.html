@@ -1,0 +1,50 @@
+{% extends '_base.html' %}
+{% block content %}
+    <script>
+    window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted ||
+                         ( typeof window.performance != "undefined" &&
+                              window.performance.navigation.type === 2 );
+  if ( historyTraversal ) {
+    // Handle page restore.
+    window.location.reload();
+  }
+});
+</script>
+<div class="card" style="padding: 100px">
+    {% if supervisorattendance.supervisor.role == "Supervisor" %}
+    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+    <blockquote class="green">
+        <dt>Surname</dt>
+        </blockquote>
+        <dd>{{ supervisorattendance.supervisor.last_name }}</dd>
+        <blockquote class="green">
+        <dt>First Name</dt>
+        </blockquote>
+        <dd>{{ supervisorattendance.supervisor.firstname }}</dd>
+        <blockquote class="green">
+        <dt>Staff Id Number</dt>
+        </blockquote>
+        <dd>{{ supervisorattendance.supervisor.staff_id_number }}</dd>
+        <blockquote class="green">
+        <dt>Phone Number</dt>
+        </blockquote>
+        <dd>{{ supervisorattendance.supervisor.phone_number }}</dd>
+        <blockquote class="green">
+        <dt>Email</dt>
+        </blockquote>
+        <dd>{{ supervisorattendance.supervisor.email }}</dd>
+        <dt>Examination</dt>
+        <dd>{{ supervisorattendance.examination }}</dd>
+        <dt>Submission Time</dt>
+        <dd>{{ supervisorattendance.submission_time }}</dd>
+        <dt>Examination Report</dt>
+        <dd>{{ supervisorattendance.remark }}</dd>
+
+    </dl>
+    {% else%}
+        <p>You're not eligible to write this report</p>
+    {% endif %}
+</div>
+
+{% endblock %}

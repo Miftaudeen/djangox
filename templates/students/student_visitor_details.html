@@ -19,33 +19,71 @@
                 <img src="../media/{{  image_url|cut:'/' }}.jpg" height="300" alt="Student Passport">
             </div>
         {% endwith %}
-    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+    <dl style="padding-top: 20px; width:58%;  display: inline-block">
+        <blockquote class="green">
         <dt>Surname</dt>
+        </blockquote>
         <dd>{{ visitingstudent.student.surname }}</dd>
+        <blockquote class="green">
         <dt>First Name</dt>
+        </blockquote>
+
         <dd>{{ visitingstudent.student.firstname }}</dd>
+        <blockquote class="green">
         <dt>Other Name</dt>
-        <dd>{{ visitingstudent.student.othername }}</dd>
+        </blockquote>
+        <dd>{{ attendance.student.othername }}</dd>
+        <blockquote class="green">
         <dt>Matriculation Number</dt>
+        </blockquote>
+
         <dd>{{ visitingstudent.student.matric_num }}</dd>
+    </dl>
+       <dl>
+       <blockquote class="green">
         <dt>Gender</dt>
+        </blockquote>
         <dd>{{ visitingstudent.student.gender }}</dd>
+        <blockquote class="green">
         <dt>Room</dt>
+        </blockquote>
         <dd>{{ visitingstudent.student.room }}</dd>
+        <blockquote class="green">
         <dt>Programme</dt>
+        </blockquote>
         <dd>{{ visitingstudent.student.programme }}</dd>
+        <blockquote class="green">
         <dt>Payment Status</dt>
+        </blockquote>
         <dd>{{ visitingstudent.student.payment_status | title }} Payment</dd>
+       </dl>
+        {% with image_url=visitingstudent.visitor.matric_num %}
+
+            <div style="background-image: url('../media/{{  image_url|cut:'/' }}.PNG'); background-size: contain; background-repeat: no-repeat; width:40%; height: 300px; display: inline-block">
+                <img src="../media/{{  image_url|cut:'/' }}.jpg" height="300" alt="Student Passport">
+            </div>
+        {% endwith %}
+        <dl style="padding-top: 20px; width:58%;  display: inline-block">
+        <blockquote class="green">
         <dt>Visitor Name</dt>
+        </blockquote>
         <dd>{{ visitingstudent.visitor.surname }} {{ visitingstudent.visitor.firstname }} {{ visitingstudent.visitor.othername }}</dd>
+        <blockquote class="green">
         <dt>Visitor's Programme</dt>
+        </blockquote>
         <dd>{{  visitingstudent.visitor.programme }}</dd>
+        <blockquote class="green">
         <dt>Visitor's Matriculation Number</dt>
+        </blockquote>
         <dd>{{ visitingstudent.visitor.matric_num }}</dd>
+        <blockquote class="green">
         <dt>Visitor Arrival Time</dt>
+        </blockquote>
         <dd>{{ visitingstudent.arrival_time }}</dd>
         {% if visitingstudent.departure_time %}
-            <dt>Visitor Departure Time</dt>
+            <blockquote class="green">
+        <dt>Visitor Departure Time</dt>
+        </blockquote>
             <dd>{{ visitingstudent.departure_time }}</dd>
         {% endif %}
     </dl>

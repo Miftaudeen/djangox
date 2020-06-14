@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models import CustomUser
+
 SEX_CHOICES = (
     ('Male', 'Male'),
     ('Female', 'Female'),
@@ -63,7 +65,6 @@ class StudentLog(models.Model):
 class Examination(models.Model):
     title = models.TextField()
     venue = models.TextField()
-    date = models.DateField()
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
 
@@ -76,19 +77,23 @@ class Attendance(models.Model):
     check_out = models.TimeField(blank=True, null=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     exam = models.ForeignKey(Examination, on_delete=models.CASCADE)
+    remark = models.TextField(null=True, blank=True)
+    valid = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ['student', 'exam']
 
     def __str__(self):
-        return  "%s %s %s" % (self.exam, self.student, self.check_in)
+        return "%s %s %s" % (self.exam, self.student, self.check_in)
 
 
 class HostelAttendance(models.Model):
-    check_in = models.TimeField()
-    check_out = models.TimeField(blank=True, null=True)
+    check_in = models.DateTimeField()
+    check_out = models.DateTimeField(blank=True, null=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE)
+    valid = models.BooleanField(default=False)
+    remark = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return "%s %s %s" % (self.hostel, self.student, self.check_in)
@@ -128,4 +133,25 @@ class Property(models.Model):
         verbose_name_plural = 'Properties'
 
     def __str__(self):
-        return  self.name
+        return self.name
+
+
+class PorterAttendance(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='porter_attendances')
+    arrival_time = models.DateTimeField()
+    departure_time = models.DateTimeField(null=True, blank=True)
+    hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE, related_name='hostel_porter_attendance')
+
+    def __str__(self):
+        return self.user.staff_id_number
+
+
+class SupervisorAttendance(models.Model):
+    supervisor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='supervisor_attendances')
+    submission_time = models.DateTimeField()
+    other_supervisor = models.TextField()
+    remark = models.CharField(max_length=5000)
+    examination = models.ForeignKey(Examination, on_delete=models.CASCADE, related_name='examination_supervisors')
+
+    def __str__(self):
+        return "%s %s" % (self.supervisor.last_name, self.supervisor.first_name)

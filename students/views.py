@@ -1,20 +1,27 @@
 from datetime import datetime, timedelta
 import time
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from django.utils import timezone
+from django.views.generic.list import MultipleObjectMixin
 
 from students.forms import UploadStudentsForm
 from django.views.generic import FormView, DetailView, ListView, View
 
 # Create your views here.
 from students.models import Student, StudentLog, Examination, Attendance, Hostel, HostelAttendance, Room, Visitor, \
-    VisitingStudent, Property
+    VisitingStudent, Property, PorterAttendance, SupervisorAttendance
+from users.models import CustomUser
 
 
-class FileFieldView(FormView):
+class FileFieldView(LoginRequiredMixin, FormView):
+
     form_class = UploadStudentsForm
     template_name = 'students/upload.html'
     success_url = reverse_lazy('home')
@@ -35,7 +42,7 @@ class FileFieldView(FormView):
             return self.form_invalid(form)
 
 
-class StudentDetailView(DetailView):
+class StudentDetailView(LoginRequiredMixin, DetailView):
     model = Student
     template_name = "students/student_details.html"
 
@@ -51,7 +58,7 @@ class StudentDetailView(DetailView):
             return None
 
 
-class AttendanceDetailView(DetailView):
+class AttendanceDetailView(LoginRequiredMixin,  DetailView):
     model = Attendance
     template_name = "students/attendance_details.html"
 
@@ -59,12 +66,14 @@ class AttendanceDetailView(DetailView):
         query = self.request.GET.get("matric")
         exam_id = self.request.GET.get("exam")
         checkout = self.request.GET.get('checkout')
+        remark = self.request.GET.get('remark')
         try:
             if checkout == 'true':
                 student = Student.objects.get(matric_num=query)
                 exam = Examination.objects.get(id=exam_id)
                 attendance = Attendance.objects.get(student=student, exam=exam)
                 attendance.check_out = datetime.now().time()
+                attendance.remark = remark
                 attendance.save()
             else:
                 student = Student.objects.get(matric_num=query)
@@ -82,7 +91,7 @@ class AttendanceDetailView(DetailView):
             return None
 
 
-class VisitorDetailView(DetailView):
+class VisitorDetailView(LoginRequiredMixin, DetailView):
     model = Visitor
     template_name = "students/visitor_details.html"
 
@@ -109,7 +118,7 @@ class VisitorDetailView(DetailView):
             return None
 
 
-class StudentVisitorDetailView(DetailView):
+class StudentVisitorDetailView(LoginRequiredMixin, DetailView):
     model = VisitingStudent
     template_name = "students/student_visitor_details.html"
 
@@ -136,8 +145,7 @@ class StudentVisitorDetailView(DetailView):
             return None
 
 
-
-class StudentPropertyDetailView(DetailView):
+class StudentPropertyDetailView(LoginRequiredMixin, DetailView):
     model = Property
     template_name = "students/student_property_details.html"
 
@@ -165,18 +173,17 @@ class HostelAttendanceDetailView(DetailView):
     def get_object(self, queryset=None):
         query = self.request.GET.get("matric")
         hostel_id = self.request.GET.get("hostel")
+        attend_id = self.request.GET.get("attend_id")
         checkout = self.request.GET.get('checkout')
         try:
             if checkout == 'true':
-                student = Student.objects.get(matric_num=query)
-                hostel = Hostel.objects.get(id=hostel_id)
-                attendance = HostelAttendance.objects.get(student=student, hostel=hostel)
-                attendance.check_out = datetime.now().time()
+                attendance = HostelAttendance.objects.get(id=attend_id)
+                attendance.check_out = datetime.now()
                 attendance.save()
             else:
                 student = Student.objects.get(matric_num=query)
                 hostel = Hostel.objects.get(id=hostel_id)
-                attendance = HostelAttendance(student=student, check_in=datetime.now().time(), hostel=hostel)
+                attendance = HostelAttendance(student=student, check_in=datetime.now(), hostel=hostel)
                 attendance.save()
             return attendance
         except IntegrityError as e:
@@ -189,38 +196,114 @@ class HostelAttendanceDetailView(DetailView):
             return None
 
 
-class HostelDetailView(View):
+class HostelPorterAttendanceDetailView(DetailView):
+    model = PorterAttendance
+    template_name = "students/hostel_porter_attendance_details.html"
+
+    def get_object(self, queryset=None):
+        p_a_id = self.request.GET.get("p_a_id")
+        p_s_id = self.request.GET.get("p_s_id")
+        hostel_id = self.request.GET.get("hostel")
+        depart_time = self.request.GET.get('depart_time')
+        try:
+            if depart_time == 'true':
+                attendance = PorterAttendance.objects.get(id=p_a_id)
+                attendance.departure_time = datetime.now()
+                attendance.save()
+            else:
+                hostel = Hostel.objects.get(id=hostel_id)
+                staff = CustomUser.objects.get(id=p_s_id, role="Porter")
+                if staff:
+                    attendance = PorterAttendance(user=self.request.user, check_in=datetime.now(), hostel=hostel)
+                    attendance.save()
+                else:
+                    attendance = PorterAttendance()
+            return attendance
+        except Exception as e:
+            print(e)
+
+            return PorterAttendance()
+
+
+class ExaminationSupervisorDetailView(DetailView):
+    model = SupervisorAttendance
+    template_name = "students/examination_supervisor_attendance_details.html"
+
+    def get_object(self, queryset=None):
+        exam_id = self.request.GET.get("exam")
+        other_supervisors = self.request.GET.get("others")
+        report = self.request.GET.get("report")
+        try:
+            exam = Examination.objects.get(id=exam_id)
+            staff = CustomUser.objects.get(id=self.request.user.id, role="Supervisor")
+            if staff:
+                attendance = SupervisorAttendance(supervisor=staff, other_supervisor=other_supervisors,
+                                                  submission_time=timezone.now(), examination=exam, remark=report)
+                attendance.save()
+            else:
+                attendance = SupervisorAttendance()
+            return attendance
+        except Exception as e:
+            print(e)
+
+            return SupervisorAttendance()
+
+
+class HostelDetailView(LoginRequiredMixin, View):
     model = Hostel
     template_name = "students/hostel_details.html"
 
     def get(self, request, *args, **kwargs):
         hostel = get_object_or_404(Hostel, pk=kwargs['pk'])
-        hostel_attendance = HostelAttendance.objects.filter(hostel=hostel)
+        valid_hostel_attendance = HostelAttendance.objects.filter(hostel=hostel, valid=True)
+        invalid_hostel_attendance = HostelAttendance.objects.filter(hostel=hostel, valid=False)
         rooms = Room.objects.filter(hostel=hostel)
+        porter_attendance = PorterAttendance.objects.filter(departure_time=None, hostel=hostel)
+        if porter_attendance.all().count() == 0:
+            pt = PorterAttendance(arrival_time=datetime.now(), user=request.user, hostel=hostel)
+            pt.save()
+            porter_attendance = PorterAttendance.objects.filter(departure_time=None, hostel=hostel)
         students = []
         for room in rooms:
             for student in room.students.iterator():
                 students.append(student)
-        context = {'hostel': hostel, 'hostel_attendance': hostel_attendance, 'rooms': rooms, 'students': students}
+        context = {'hostel': hostel,
+                   'valid_hostel_attendance': valid_hostel_attendance,
+                   'invalid_hostel_attendance': invalid_hostel_attendance,
+                   'rooms': rooms,
+                   'porter_attendance': porter_attendance,
+                   'students': students}
         return render(request, 'students/hostel_details.html', context)
 
 
-class ExaminationDetailView(View):
+class ExaminationDetailView(LoginRequiredMixin, View):
     model = Examination
 
     template_name = "students/examination_details.html"
 
     def get(self, request, *args, **kwargs):
         examination = get_object_or_404(Examination, pk=kwargs['pk'])
-        attendance = Attendance.objects.filter(exam=examination)
+        valid_attendance = Attendance.objects.filter(exam=examination, valid=True)
+        invalid_attendance = Attendance.objects.filter(exam=examination, valid=False)
+        super_attend = SupervisorAttendance.objects.filter(examination=examination, supervisor=self.request.user)
+        try:
+            super_report = SupervisorAttendance.objects.get(examination=examination)
+        except Exception:
+            super_report = None
         valid = False
-        if (examination.date == datetime.now().date() and (datetime(year= examination.date.year, month=examination.date.month, day = examination.date.day, hour=examination.start_time.hour) - timedelta(hours=1))< datetime.now() and (datetime(year= examination.date.year, month=examination.date.month, day = examination.date.day, hour=examination.start_time.hour) + timedelta(hours=1)) > datetime.now()):
+        if examination.end_time > datetime.now(tz=timezone.get_current_timezone()):
             valid = True
-        context = {'examination': examination, 'attendance': attendance, 'valid': valid}
+        context = {'examination': examination,
+                   'valid_attendance': valid_attendance,
+                   'invalid_attendance': invalid_attendance,
+                   'valid': valid,
+                   'super_attend': super_attend,
+                   'super_report': super_report,
+                   }
         return render(request, 'students/examination_details.html', context)
 
 
-class HostelStudentDetailView(View):
+class HostelStudentDetailView(LoginRequiredMixin, View):
     model = Student
     template_name = "students/hostel_student_details.html"
 
@@ -233,14 +316,14 @@ class HostelStudentDetailView(View):
         return render(request, 'students/hostel_student_details.html', context)
 
 
-class StudentsListView(ListView):
+class StudentsListView(LoginRequiredMixin, ListView):
     model = Student
     paginate_by = 20
     ordering = ['surname', 'firstname', 'othername']
     template_name = "students/student_list.html"
 
 
-class HostelResidentsView(ListView):
+class HostelResidentsView(LoginRequiredMixin, ListView):
     model = Student
     paginate_by = 20
     ordering = ['surname', 'firstname', 'othername']
@@ -265,22 +348,60 @@ class HostelResidentsView(ListView):
         return context
 
 
-class ExaminationListView(ListView):
+class ExaminationListView(LoginRequiredMixin, ListView):
     model = Examination
     paginate_by = 20
-    ordering = ['-start_time', '-date']
+    ordering = ['-start_time']
     template_name = "students/examination_list.html"
 
 
-class HostelListView(ListView):
+class HostelListView(LoginRequiredMixin, ListView):
     model = Hostel
     paginate_by = 20
     ordering = ['name']
     template_name = "students/hostel_list.html"
 
 
-class StudentLogListView(ListView):
+class ManagementReportListView(LoginRequiredMixin, ListView):
+    model = Examination
+    paginate_by = 20
+    ordering = ['start_time']
+    template_name = "students/management_report_list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['hostels'] = Hostel.objects.all()
+        context['supervisors_attendance'] = SupervisorAttendance.objects.all()
+        return context
+
+
+class StudentLogListView(LoginRequiredMixin, ListView):
     model = StudentLog
     paginate_by = 100
-    ordering = ['-time', '-day']
+    ordering = ['-day', '-time']
     template_name = "students/student_log.html"
+
+
+@login_required
+def approve_attendance(request):
+    is_valid = request.GET.get("valid")
+    attendance = Attendance.objects.get(id=request.GET.get("attendance_id"))
+    exam_id = request.GET.get("examination_id")
+    reason = request.GET.get("reason")
+    attendance.remark = reason
+    attendance.valid = True if is_valid else False
+    attendance.save()
+    return HttpResponseRedirect(reverse("examination_details", args=[exam_id]))
+
+
+@login_required
+def approve_hostel_attendance(request):
+    is_valid = request.GET.get("valid")
+    hostelattendance = HostelAttendance.objects.get(id=request.GET.get("hostelattendance_id"))
+    hostel_id = request.GET.get("hostel_id")
+    reason = request.GET.get("reason")
+    hostelattendance.remark = reason
+    hostelattendance.valid = True if is_valid else False
+    hostelattendance.save()
+    return HttpResponseRedirect(reverse("hostel_details", args=[hostel_id]))
+

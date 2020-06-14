@@ -1,14 +1,13 @@
 {% extends '_base.html' %}
 {% block content %}
     <div style="padding-bottom: 100px">
-    <table class="tabular" border="1" cellpadding="10px">
+    <table class="responsive-table striped" cellpadding="10px">
         <thead>
         <tr>
-            <td>S/N</td>
-            <td>Course Title</td>
-            <td>Date of Exam</td>
-            <td>Start Time</td>
-            <td>Completion Time</td>
+            <th>S/N</th>
+            <th>Course Title</th>
+            <th>Start Time</th>
+            <th>Completion Time</th>
         </tr>
         </thead>
         <tbody>
@@ -16,7 +15,7 @@
             <tr>
                 <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
                 <td><a href="{% url 'examination_details' pk=exam.id %}">{{ exam.title}}</a></td>
-                <td>{{ exam.date }}</td>
+
                 <td>{{ exam.start_time}}</td>
                 <td>{{ exam.end_time}}</td>
             </tr>

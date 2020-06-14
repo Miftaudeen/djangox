@@ -2,26 +2,73 @@
 
 {% block content %}
     <div style="margin-bottom: 100px">
-    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+    <dl style="padding-top: 20px; display: block">
+    <blockquote class="green">
         <dt>Hostel Name</dt>
-        <dd>{{ hostel.name }}</dd>
+        </blockquote>
+        <dd>{{ hostel.name  }}</dd>
+    <blockquote class="green">
         <dt>Rooms</dt>
+        </blockquote>
         <dd>
             {% for room in rooms %}
              {{room}},
             {% endfor %}
         </dd>
     </dl>
-    <h6>Residents</h6>
+    <h6>Hostel Porters</h6>
+    {% if user.role == "Porter" %}
+    <form action="{% url 'hostel_porter_attendance'%}" method="get">
+        <input name="hostel" type="number" value="{{ hostel.id }}" hidden style="display: none">
+        <input name="p_s_id" type="text" placeholder="Porter Staff ID">
+    <input type="submit" value="Take Attendance" class="btn yellow accent-4">
+    </form>
+    {% endif %}
+    <table border="1" style="margin-top: 50px">
+        <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Arrival Time</th>
+            <th>Departure Time</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for p_attend in porter_attendance %}
+            <td>{{ p_attend.user.first_name }}</td>
+            <td>{{ p_attend.user.last_name }}</td>
+            <td>{{ p_attend.user.email }}</td>
+            <td>{{ p_attend.user.phone_number }}</td>
+            <td>{{ p_attend.arrival_time }}</td>
+            {% if p_attend.departure_time %}
+                    <td>{{ p_attend.departure_time }}</td>
+            {% elif user.role == "Porter" %}
+                    <td>
+                    <form action="{% url 'hostel_porter_attendance'%}" method="get" style="display: inline">
+                        <input name="hostel" type="number" value="{{ hostel.id }}" hidden  style="display: none">
+                        <input name="p_a_id" type="text" value="{{ p_attend.id }}" hidden  style="display: none">
+                        <input name="depart_time" type="text" value="true" hidden  style="display: none">
+                        <input type="submit" value="Check Out" style="display: inline" class="btn yellow accent-4">
+                    </form>
+                    </td>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+    <h6>Residents List</h6>
     <table border="1" style="margin-top: 50px">
                 <thead>
                     <tr>
-                        <td>S/N</td>
-                        <td>Full Name</td>
-                        <td>Matriculation Number</td>
-                        <td>Room</td>
-                        <td>Allow Entry</td>
-                        <td>Add Visitor</td>
+                        <th>S/N</th>
+                        <th>Full Name</th>
+                        <th>Matriculation Number</th>
+                        <th>Room</th>
+                        {% if user.role == "Porter" %}
+                        <th>Allow Entry</th>
+                        {% endif %}
+                        <th>Resident Details</th>
 
                     </tr>
                 </thead>
@@ -34,14 +81,16 @@
                 <td>{{ student.surname }} {{ student.firstname }} {{ student.othername }}</td>
             <td>{{ student.matric_num}}</td>
             <td>{{ student.room }}</td>
+                    {% if user.role == "Porter" %}
                     <td>
                     <form action="{% url 'hostel_attendance_details'%}" method="get" style="display: inline">
-                        <input name="hostel" type="number" value="{{ hostel.id }}" hidden  style="display: inline">
-                        <input name="matric" type="text" value="{{ student.matric_num }}" hidden  style="display: inline">
-                        <input type="submit" value="Allow Entry" style="display: inline">
+                        <input name="hostel" type="number" value="{{ hostel.id }}" hidden  style="display: none">
+                        <input name="matric" type="text" value="{{ student.matric_num }}" hidden  style="display: none">
+                        <input type="submit" value="Allow Entry" style="display: inline" class="btn yellow accent-4">
                     </form>
                     </td>
-                    <td><a href="{% url 'hostel_student_details' pk=student.id %}">Add Visitor</a></td>
+                    {% endif %}
+                    <td ><a href="{% url 'hostel_student_details' pk=student.id %}" class="btn yellow accent-4">Details</a></td>
 
             <td>{{ stud_att.time}}</td>
             </tr>
@@ -50,19 +99,27 @@
         {% endfor %}
     </tbody>
 </table>
+    <br>
+    <br>
+    <h6>Hostel Attendance List</h6>
+    <br>
+    <div class="row yellow accent-4">
+      <div class="col s7 "><span class="flow-text">Granted Access to</span></div>
+      <div class="col s5 "><span class="flow-text">{{ valid_hostel_attendance.count}} Students</span></div>
+    </div>
     <table border="1" style="margin-top: 50px">
                 <thead>
                     <tr>
-                        <td>S/N</td>
-                        <td>Full Name</td>
-                        <td>Matriculation Number</td>
-                        <td>Check-in Time</td>
-                        <td>Check-out Time</td>
+                        <th>S/N</th>
+                        <th>Full Name</th>
+                        <th>Matriculation Number</th>
+                        <th>Check-in Time</th>
+                        <th>Check-out Time</th>
 
                     </tr>
                 </thead>
     <tbody>
-    {% for stud_att in hostel_attendance %}
+    {% for stud_att in valid_hostel_attendance %}
 
 
                 <tr>
@@ -72,18 +129,51 @@
             <td>{{ stud_att.check_in }}</td>
                 {% if stud_att.check_out %}
                     <td>{{ stud_att.check_out }}</td>
-                    {% else %}
+                    {% elif user.role == "Porter" %}
                     <td>
                     <form action="{% url 'hostel_attendance_details'%}" method="get" style="display: inline">
-                        <input name="hostel" type="number" value="{{ hostel.id }}" hidden  style="display: inline">
-                        <input name="matric" type="text" value="{{ stud_att.student.matric_num }}" hidden  style="display: inline">
-                        <input name="checkout" type="text" value="true" hidden  style="display: inline">
-                        <input type="submit" value="Check Out" style="display: inline">
+                        <input name="attend_id" type="number" value="{{ stud_att.id }}" hidden  style="display: none">
+                        <input name="checkout" type="text" value="true" hidden  style="display: none">
+                        <input type="submit" value="Check Out" style="display: inline" class="btn yellow accent-4">
                     </form>
                     </td>
                 {% endif %}
 
             <td>{{ stud_att.time}}</td>
+            </tr>
+
+
+        {% endfor %}
+    </tbody>
+</table>
+
+    <br>
+
+    <div class="row yellow accent-4">
+      <div class="col s7 "><span class="flow-text">Access Denied for</span></div>
+      <div class="col s5 "><span class="flow-text">{{  invalid_hostel_attendance.count}} Students</span></div>
+    </div>
+    <table border="1" style="margin-top: 50px">
+                <thead>
+                    <tr>
+                        <th>S/N</th>
+                        <th>Full Name</th>
+                        <th>Matriculation Number</th>
+                        <th>Check-in Time</th>
+                        <th>Reason</th>
+
+                    </tr>
+                </thead>
+    <tbody>
+    {% for stud_att in invalid_hostel_attendance %}
+
+
+                <tr style="color: darkred">
+            <td>{{ forloop.counter }}</td>
+                <td>{{ stud_att.student.surname }} {{ stud_att.student.firstname }} {{ stud_att.student.othername }}</td>
+            <td>{{ stud_att.student.matric_num}}</td>
+            <td>{{ stud_att.check_in }}</td>
+            <td>{{ stud_att.remark}}</td>
             </tr>
 
 

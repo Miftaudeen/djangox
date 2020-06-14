@@ -19,33 +19,61 @@
                 <img src="../media/{{  image_url|cut:'/' }}.jpg" height="300" alt="Student Passport">
             </div>
         {% endwith %}
-    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+    <dl style="padding-top: 20px; width:58%;  display: inline-block">
+    <blockquote class="green">
         <dt>Surname</dt>
+        </blockquote>
         <dd>{{ visitor.student.surname }}</dd>
+        <blockquote class="green">
         <dt>First Name</dt>
+        </blockquote>
         <dd>{{ visitor.student.firstname }}</dd>
+        <blockquote class="green">
         <dt>Other Name</dt>
+        </blockquote>
         <dd>{{ visitor.student.othername }}</dd>
+        <blockquote class="green">
         <dt>Matriculation Number</dt>
+        </blockquote>
         <dd>{{ visitor.student.matric_num }}</dd>
+    </dl>
+        <dl>
+        <blockquote class="green">
         <dt>Gender</dt>
+        </blockquote>
         <dd>{{ visitor.student.gender }}</dd>
+        <blockquote class="green">
         <dt>Room</dt>
+        </blockquote>
         <dd>{{ visitor.student.room }}</dd>
+        <blockquote class="green">
         <dt>Programme</dt>
+        </blockquote>
         <dd>{{ visitor.student.programme }}</dd>
+        <blockquote class="green">
         <dt>Payment Status</dt>
+        </blockquote>
         <dd>{{ visitor.student.payment_status | title }} Payment</dd>
+        <blockquote class="green">
         <dt>Visitor Name</dt>
+        </blockquote>
         <dd>{{ visitor.name }}</dd>
+        <blockquote class="green">
         <dt>Visitor's Phone Number</dt>
+        </blockquote>
         <dd>{{ visitor.phone_number }}</dd>
+        <blockquote class="green">
         <dt>Visitor's Address</dt>
+        </blockquote>
         <dd>{{ visitor.address }}</dd>
+        <blockquote class="green">
         <dt>Visitor Arrival Time</dt>
+        </blockquote>
         <dd>{{ visitor.arrival_time }}</dd>
         {% if visitor.departure_time %}
-            <dt>Visitor Departure Time</dt>
+            <blockquote class="green">
+        <dt>Visitor Departure Time</dt>
+        </blockquote>
             <dd>{{ visitor.departure_time }}</dd>
         {% endif %}
     </dl>

@@ -1,13 +1,13 @@
 {% extends '_base.html' %}
 {% block content %}
-    <table class="tabular" border="1" cellpadding="10px">
+    <table class="responsive-table striped" border="1" cellpadding="10px">
         <thead>
         <tr>
-            <td>S/N</td>
-            <td>Day</td>
-            <td>Full Name</td>
-        <td>Student's Matric Number</td>
-        <td>Time</td>
+            <th>S/N</th>
+            <th>Day</th>
+            <th>Full Name</th>
+        <th>Student's Matric Number</th>
+        <th>Time</th>
         </thead>
         <tbody>
         {% for student_log in object_list %}

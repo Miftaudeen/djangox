@@ -2,39 +2,60 @@
 
 {% block content %}
     <div style="margin-bottom: 100px">
-    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+    <dl style="padding-top: 20px;  ">
+        <blockquote class="green">
         <dt>Course Title</dt>
+    </blockquote>
+
         <dd>{{ examination.title }}</dd>
+        <blockquote class="green">
         <dt>Venue</dt>
+    </blockquote>
+
         <dd>{{ examination.venue}}</dd>
+        <blockquote class="green">
         <dt>Examination Date</dt>
-        <dd>{{ examination.date }}</dd>
+    </blockquote>
+
+        <dd>{{ examination.start_time.date}}</dd>
+        <blockquote class="green">
         <dt>Start Time</dt>
+    </blockquote>
+
         <dd>{{ examination.start_time }}</dd>
+        <blockquote class="green">
         <dt>Completion Time</dt>
+    </blockquote>
+
         <dd>{{ examination.end_time}}</dd>
     </dl>
-    {% if valid %}
+    {% if valid and user.role == "Supervisor" %}
     <form action="{% url 'attendance_details'%}" method="get">
         <input name="exam" type="number" value="{{ examination.id }}" hidden>
         <input name="matric" type="text" placeholder="Take attendance...">
-    <input type="submit" value="Take Attendance">
+    <input class="btn yellow accent-4" type="submit" value="Take Attendance">
     </form>
     {% endif %}
-    <table border="1" style="margin-top: 50px">
+    <br>
+    <div class="row yellow accent-4">
+      <div class="col s7 "><span class="flow-text">Granted Access to</span></div>
+      <div class="col s5 "><span class="flow-text">{{ valid_attendance.count}} Students</span></div>
+    </div>
+    <p></p>
+    <table class="responsive-table striped" border="1" style="margin-top: 50px">
                 <thead>
                     <tr>
-                        <td>S/N</td>
-                        <td>Full Name</td>
-                        <td>Matriculation Number</td>
-                        <td>Check-in Time</td>
-                        <td>Check-out Time</td>
+                        <th>S/N</th>
+                        <th>Full Name</th>
+                        <th>Matriculation Number</th>
+                        <th>Check-in Time</th>
+                        <th>Check-out Time</th>
+                        <th>Remark</th>
 
                     </tr>
                 </thead>
     <tbody>
-    {% for stud_att in attendance %}
-
+    {% for stud_att in valid_attendance %}
 
                 <tr>
             <td>{{ forloop.counter }}</td>
@@ -43,24 +64,120 @@
             <td>{{ stud_att.check_in }}</td>
                 {% if stud_att.check_out %}
                     <td>{{ stud_att.check_out }}</td>
-                    {% else %}
+                    {% elif not super_attend %}
                     <td>
                     <form action="{% url 'attendance_details'%}" method="get" style="display: inline">
-                        <input name="exam" type="number" value="{{ examination.id }}" hidden  style="display: inline">
-                        <input name="matric" type="text" value="{{ stud_att.student.matric_num }}" hidden  style="display: inline">
-                        <input name="checkout" type="text" value="true" hidden  style="display: inline">
-                        <input type="submit" value="Check Out" style="display: inline">
+                        <input name="exam" type="number" value="{{ examination.id }}" hidden  style="display: none">
+                        <input name="matric" type="text" value="{{ stud_att.student.matric_num }}" hidden  style="display: none">
+                        <input name="checkout" type="text" value="true" hidden  style="display: none">
+                        <input name="remark" type="text" placeholder="Add Checkout Remark">
+                        <input class="btn yellow accent-4" type="submit" value="Check Out" style="display: inline">
                     </form>
                     </td>
                 {% endif %}
-
-            <td>{{ stud_att.time}}</td>
+            {% if stud_att.remark %}
+                <td>{{ stud_att.remark }}</td>
+            {% endif %}
             </tr>
+
 
 
         {% endfor %}
     </tbody>
 </table>
+
+    <br>
+
+    <div class="row yellow accent-4">
+      <div class="col s7 "><span class="flow-text">Access Denied for</span></div>
+      <div class="col s5 "><span class="flow-text">{{ invalid_attendance.count}} Students</span></div>
+    </div>
+    <table class="responsive-table striped" border="1" style="margin-top: 50px">
+                <thead>
+                    <tr>
+                        <th>S/N</th>
+                        <th>Full Name</th>
+                        <th>Matriculation Number</th>
+                        <th>Check-in Time</th>
+                        <th>Reason</th>
+
+                    </tr>
+                </thead>
+    <tbody>
+    {% for stud_att in invalid_attendance %}
+
+        {% if not stud_att.valid %}
+                <tr style="color: darkred">
+            <td>{{ forloop.counter }}</td>
+                <td>{{ stud_att.student.surname }} {{ stud_att.student.firstname }} {{ stud_att.student.othername }}</td>
+            <td>{{ stud_att.student.matric_num}}</td>
+            <td>{{ stud_att.check_in }}</td>
+            <td>{{ stud_att.remark }}</td>
+
+
+            </tr>
+
+        {% endif %}
+
+
+        {% endfor %}
+    </tbody>
+</table>
+    {% if not super_attend  and user.role == "Supervisor"%}
+        <form action="{% url 'supervisor_report' pk=examination.id %}" method="get">
+            <p><input name="exam" type="number" value="{{ examination.id }}" hidden></p>
+            <p><input name="others" type="text" placeholder="Other Supervisor"></p>
+            <p><input name="report" type="text"  placeholder="Summary about the exam" multiple maxlength="5000"></p>
+            <p><input class="btn yellow accent-4" type="submit" value="Submit Report"></p>
+        </form>
+    {% elif super_report %}
+        <dl style="padding-top: 20px;">
+        <blockquote class="green">
+        <dt>Surname</dt>
+    </blockquote>
+        <dd>{{ super_report.supervisor.last_name }}</dd>
+            <blockquote class="green">
+        <dt>First Name</dt>
+    </blockquote>
+
+        <dd>{{ super_report.supervisor.first_name }}</dd>
+            <blockquote class="green">
+        <dt>Staff Id Number</dt>
+    </blockquote>
+
+        <dd>{{ super_report.supervisor.staff_id_number }}</dd>
+            <blockquote class="green">
+        <dt>Phone Number</dt>
+    </blockquote>
+
+        <dd>{{ super_report.supervisor.phone_number }}</dd>
+            <blockquote class="green">
+        <dt>Email</dt>
+    </blockquote>
+        <dd>{{ super_report.supervisor.email }}</dd>
+            <blockquote class="green">
+        <dt>Other Supervisors</dt>
+    </blockquote>
+            <dd>{{ super_report.other_supervisor|default_if_none:"N/A"}}</dd>
+
+            <blockquote class="green">
+        <dt>Examination</dt>
+    </blockquote>
+
+        <dd>{{ super_report.examination }}</dd>
+            <blockquote class="green">
+        <dt>Submission Time</dt>
+    </blockquote>
+
+        <dd>{{ super_report.submission_time }}</dd>
+            <blockquote class="green">
+        <dt>Examination Report</dt>
+    </blockquote>
+
+        <dd>{{ super_report.remark }}</dd>
+
+    </dl>
+    {% endif %}
     </div>
     <script>
     window.addEventListener( "pageshow", function ( event ) {

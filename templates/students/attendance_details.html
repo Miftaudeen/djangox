@@ -10,6 +10,19 @@
     window.location.reload();
   }
 });
+document.addEventListener('DOMContentLoaded', function() {
+    var elems = {
+        "Came late for examination": null,
+        "Haven't paid tuition fee": null,
+        "Face doesn't match": null,
+          "Invalid Identity Card":null
+};
+    var instances = M.Autocomplete.init(elems, options);
+
+  });
+
+
+
 </script>
 <div class="card" style="padding: 100px">
     {% if attendance.check_in == None and attendance.student %}
@@ -21,29 +34,72 @@
                 <img src="../media/{{  image_url|cut:'/' }}.jpg" height="300" alt="Student Passport">
             </div>
         {% endwith %}
-    <dl style="padding-top: 20px; width:40%;  display: inline-block">
+    <dl style="padding-top: 20px; width:50%;  display: inline-block">
+        <blockquote class="green">
         <dt>Surname</dt>
+        </blockquote>
         <dd>{{ attendance.student.surname }}</dd>
+        <blockquote class="green">
         <dt>First Name</dt>
+        </blockquote>
+
         <dd>{{ attendance.student.firstname }}</dd>
+        <blockquote class="green">
         <dt>Other Name</dt>
+        </blockquote>
         <dd>{{ attendance.student.othername }}</dd>
+        <blockquote class="green">
         <dt>Matriculation Number</dt>
+        </blockquote>
+
         <dd>{{ attendance.student.matric_num }}</dd>
+    </dl>
+        <dl>
+        <blockquote class="green">
         <dt>Gender</dt>
+        </blockquote>
         <dd>{{ attendance.student.gender }}</dd>
-        <dt>First Name</dt>
-        <dd>{{ attendance.student.gender }}</dd>
+        <blockquote class="green">
         <dt>Programme</dt>
+        </blockquote>
         <dd>{{ attendance.student.programme }}</dd>
+        <blockquote class="green">
         <dt>Payment Status</dt>
+        </blockquote>
         <dd>{{ attendance.student.payment_status | title }} Payment</dd>
+        <blockquote class="green">
         <dt>Check-in Time</dt>
+        </blockquote>
         <dd>{{ attendance.check_in }}</dd>
         {% if attendance.check_out %}
-            <dt>Check-out Time</dt>
+            <blockquote class="green">
+        <dt>Check-out Time</dt>
+        </blockquote>
             <dd>{{ attendance.check_out }}</dd>
-        {% endif %}
+       {% else %}
+    <form class="form" action="{% url 'approve_attendance' %}">
+        <input value="{{ attendance.id }}" name="attendance_id" hidden>
+        <input value="{{ attendance.exam_id }}" name="examination_id" hidden>
+        <p>
+      <label>
+        <input type="checkbox" value="True" name="valid"/>
+        <span>Approve Entry</span>
+      </label>
+    </p>
+        <div class="row">
+    <div class="col s12">
+      <div class="row">
+        <div class="input-field col s12">
+          <input type="text" id="autocomplete-input" name="reason" class="autocomplete">
+    <label>Reason for denied approval</label>
+        </div>
+      </div>
+    </div>
+        </div>
+
+        <input type="submit" value="Submit" style="display: inline" class="btn yellow accent-4">
+    </form>
+             {% endif %}
     </dl>
     {% else%}
         <p>There are no Student with the provided matriculation number</p>
