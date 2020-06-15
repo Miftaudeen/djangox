@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "34530798c6c5511ef2b4fb295118cdc49d4f30bc135e21958b4a1868abd430d6"
+            "sha256": "9ddc1b424a028e7c623d1b32eaedb312c8770612dc1fa41c058902c2496c2021"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -75,6 +75,14 @@
             ],
             "index": "pypi",
             "version": "==1.9.1"
+        },
+        "django-excel": {
+            "hashes": [
+                "sha256:81cd3bce8007009c30205f7085a97f2908557014900775577cab0b9a770c2bad",
+                "sha256:f0297202fc460eb74657f8a9d4473921050fbe2e297765c174be9cf33d1195c7"
+            ],
+            "index": "pypi",
+            "version": "==0.0.10"
         },
         "django-heroku": {
             "hashes": [
@@ -176,6 +184,13 @@
                 "sha256:2cba956814e72b66072d97b00ede4a084ad881ce72129088eb0dc3c7f3d670cd"
             ],
             "version": "==0.5.20"
+        },
+        "pyexcel-webio": {
+            "hashes": [
+                "sha256:039538f1b35351f1632891dde29ef4d7fba744e217678ebb5a501336e28ca265",
+                "sha256:3583cf7dcddb747520a8a90e93cf07b0584878b56b3c41c46d132b458a6cfd00"
+            ],
+            "version": "==0.1.4"
         },
         "python3-openid": {
             "hashes": [
