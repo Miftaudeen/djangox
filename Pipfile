@@ -16,6 +16,7 @@ requests = "==2.23.0"
 django-crispy-forms = "==1.9.1"
 django-excel = "*"
 gunicorn = "*"
+pyexcel-xlsx = "*"
 
 [requires]
 python_version = "3.7"

@@ -16,7 +16,7 @@ ROLE_STATUS_CHOICES = (
 
 
 class CustomUser(AbstractUser):
-    staff_id_number = models.CharField(max_length=10, unique=True)
+    staff_id_number = models.CharField(max_length=10,)
     phone_number = models.CharField(max_length=15)
     role = models.CharField(max_length=20, choices=ROLE_STATUS_CHOICES)
 
