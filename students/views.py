@@ -72,13 +72,13 @@ class AttendanceDetailView(LoginRequiredMixin,  DetailView):
                 student = Student.objects.get(matric_num=query)
                 exam = Examination.objects.get(id=exam_id)
                 attendance = Attendance.objects.get(student=student, exam=exam)
-                attendance.check_out = datetime.now().time()
+                attendance.check_out = datetime.now()
                 attendance.remark = remark
                 attendance.save()
             else:
                 student = Student.objects.get(matric_num=query)
                 exam = Examination.objects.get(id=exam_id)
-                attendance = Attendance(student=student, check_in=datetime.now().time(), exam=exam)
+                attendance = Attendance(student=student, check_in=datetime.now(), exam=exam)
                 attendance.save()
             return attendance
         except IntegrityError as e:

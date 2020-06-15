@@ -73,8 +73,8 @@ class Examination(models.Model):
 
 
 class Attendance(models.Model):
-    check_in = models.TimeField()
-    check_out = models.TimeField(blank=True, null=True)
+    check_in = models.DateTimeField()
+    check_out = models.DateTimeField(blank=True, null=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     exam = models.ForeignKey(Examination, on_delete=models.CASCADE)
     remark = models.TextField(null=True, blank=True)
