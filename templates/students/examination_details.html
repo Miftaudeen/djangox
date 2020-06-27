@@ -29,7 +29,7 @@
 
         <dd>{{ examination.end_time}}</dd>
     </dl>
-    {% if valid and user.role == "Supervisor" %}
+    {% if valid and user.role == "Supervisor"  and not super_attend%}
     <form action="{% url 'attendance_details'%}" method="get">
         <input name="exam" type="number" value="{{ examination.id }}" hidden>
         <input name="matric" type="text" placeholder="Take attendance...">
@@ -57,26 +57,28 @@
     <tbody>
     {% for stud_att in valid_attendance %}
 
-                <tr>
+                <tr style="color: {% if stud_att.remark  %} 'red' {% else %} 'blue' {% endif %}">
             <td>{{ forloop.counter }}</td>
                 <td>{{ stud_att.student.surname }} {{ stud_att.student.firstname }} {{ stud_att.student.othername }}</td>
             <td>{{ stud_att.student.matric_num}}</td>
             <td>{{ stud_att.check_in }}</td>
                 {% if stud_att.check_out %}
                     <td>{{ stud_att.check_out }}</td>
-                    {% elif not super_attend %}
+                    {% else %}
+                    <td></td>
+                {% endif %}
+            {% if stud_att.remark %}
+                <td>{{ stud_att.remark }}</td>
+                {% elif not super_attend and not stud_att.check_out%}
                     <td>
                     <form action="{% url 'attendance_details'%}" method="get" style="display: inline">
                         <input name="exam" type="number" value="{{ examination.id }}" hidden  style="display: none">
                         <input name="matric" type="text" value="{{ stud_att.student.matric_num }}" hidden  style="display: none">
                         <input name="checkout" type="text" value="true" hidden  style="display: none">
-                        <input name="remark" type="text" placeholder="Add Checkout Remark">
-                        <input class="btn yellow accent-4" type="submit" value="Check Out" style="display: inline">
+                        <input name="remark" type="text" placeholder="Reason for submission">
+                        <input class="btn yellow accent-4" type="submit" value="Submit" style="display: inline">
                     </form>
                     </td>
-                {% endif %}
-            {% if stud_att.remark %}
-                <td>{{ stud_att.remark }}</td>
             {% endif %}
             </tr>
 

@@ -81,10 +81,14 @@ document.addEventListener('DOMContentLoaded', function() {
         <input value="{{ attendance.id }}" name="attendance_id" hidden>
         <input value="{{ attendance.exam_id }}" name="examination_id" hidden>
         <p>
-      <label>
-        <input type="checkbox" value="True" name="valid"/>
+          <label>
+        <input name="valid" type="radio" checked />
         <span>Approve Entry</span>
       </label>
+          <label>
+        <input name="valid" type="radio" checked />
+        <span>Disapprove Entry</span>
+          </label>
     </p>
         <div class="row">
     <div class="col s12">

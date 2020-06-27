@@ -1,4 +1,6 @@
+from django.core.validators import MaxValueValidator
 from django.db import models
+from django.urls import reverse
 
 from users.models import CustomUser
 
@@ -29,14 +31,6 @@ class Hostel(models.Model):
         return self.name
 
 
-class Room(models.Model):
-    room_number = models.TextField()
-    hostel = models.ManyToManyField(to=Hostel, related_name="rooms")
-
-    def __str__(self):
-        return "%s (%s)" % (self.hostel.first().name, self.room_number)
-
-
 # Create your models here.
 class Student(models.Model):
     matric_num = models.CharField(max_length =15)
@@ -46,11 +40,31 @@ class Student(models.Model):
     gender = models.CharField(max_length=10, choices=SEX_CHOICES, default='Male')
     programme = models.TextField()
     payment_status = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='no')
-    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True, related_name="students")
+    hostel_name = models.ForeignKey('Hostel', on_delete=models.SET_NULL, null=True)
+    room = models.ForeignKey('Room', on_delete=models.SET_NULL, null=True, blank=True, related_name="residents")
     # passport =  models.ImageField(blank=True, default="${matric_num}.png")
 
     def __str__(self):
         return "%s %s %s" % (self.surname, self.firstname, self.othername)
+
+
+class Room(models.Model):
+    hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE, default=1)
+    name = models.CharField(max_length=5, default="%s %s" % (hostel, id))
+    floor = models.CharField(max_length=1, blank=True)
+    wing = models.CharField(max_length=1, blank=True)
+    comment = models.CharField(max_length=100, blank=True, default="comment here")
+    room_capacity = models.PositiveSmallIntegerField(validators=[MaxValueValidator(8), ], default=3)
+    room_accommodation = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('room-detail', args=[str(self.id)])
+
+    class Meta:
+        verbose_name = "Room Record"
 
 
 class StudentLog(models.Model):
@@ -76,7 +90,7 @@ class Attendance(models.Model):
     check_in = models.DateTimeField()
     check_out = models.DateTimeField(blank=True, null=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    exam = models.ForeignKey(Examination, on_delete=models.CASCADE)
+    exam = models.ForeignKey(Examination, on_delete=models.CASCADE, related_name="exam_attendance")
     remark = models.TextField(null=True, blank=True)
     valid = models.BooleanField(default=False)
 
@@ -91,7 +105,7 @@ class HostelAttendance(models.Model):
     check_in = models.DateTimeField()
     check_out = models.DateTimeField(blank=True, null=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE)
+    hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE, related_name="hostel_attendance")
     valid = models.BooleanField(default=False)
     remark = models.TextField(null=True, blank=True)
 
