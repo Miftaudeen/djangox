@@ -5,6 +5,7 @@ from rest_framework.authtoken.models import Token
 
 # Role status constants:
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.exceptions import NotAuthenticated
 from rest_framework.response import Response
 
 PORTER = 'Porter'
